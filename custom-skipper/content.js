@@ -2,7 +2,7 @@ let inputBuffer = "";
 let timer = null;
 
 document.addEventListener("keydown", (e) => {
-  if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName) || 
+  if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName) ||
       document.activeElement.isContentEditable) return;
 
   const key = e.key.toLowerCase();
@@ -11,6 +11,7 @@ document.addEventListener("keydown", (e) => {
     inputBuffer = key;
     resetTimer();
     e.preventDefault();
+    e.stopPropagation();
     return;
   }
 
@@ -24,7 +25,15 @@ document.addEventListener("keydown", (e) => {
 
 function resetTimer() {
   clearTimeout(timer);
-  timer = setTimeout(executeAction, 300);
+  timer = setTimeout(executeAction, 500);
+}
+
+function getVideo() {
+  // Try YouTube's main player first
+  const ytPlayer = document.querySelector("#movie_player video, .html5-main-video");
+  if (ytPlayer) return ytPlayer;
+  // Fallback to any video
+  return document.querySelector("video");
 }
 
 function executeAction() {
@@ -35,7 +44,7 @@ function executeAction() {
 
   const action = inputBuffer[0];
   const valueStr = inputBuffer.slice(1);
-  const video = document.querySelector("video");
+  const video = getVideo();
 
   if (video) {
     if (action === 'g') {
@@ -47,7 +56,7 @@ function executeAction() {
       }
     }
   }
-  inputBuffer = ""; 
+  inputBuffer = "";
 }
 
 function parseTimestamp(str) {
